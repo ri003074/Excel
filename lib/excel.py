@@ -1,21 +1,48 @@
-import os
 import dataclasses
 import win32com.client
 
 
 @dataclasses.dataclass()
+class GraphParameter:
+    input_file: str = None
+    graph_type: int = None
+    graph_title: str = None
+    graph_range: str = None
+
+
+@dataclasses.dataclass()
 class ExcelVariable:
-    xlCategory = 1
-    xlValue = 2
+    xlLine: int = 4
+    xlLineMarkers: int = 65
+    xlXYScatter: int = -4169
+    xlCategory: int = 1
+    xlValue: int = 2
 
 
 class Excel:
     def __init__(self):
         self.wb = None
+        self.ws = None
+        self.shape = None
 
     def setup_active_excel(self):
         xl = win32com.client.GetObject(Class="Excel.Application")
         self.wb = xl.Workbooks(1)
+        self.ws = self.wb.ActiveSheet
+
+    def add_chart(self, graph_type, graph_range=None):
+        if graph_range is None:
+            self.ws.Range("A1").CurrentRegion.Select()
+        elif ":" in graph_range:
+            self.ws.Range(graph_range).Select()
+        else:
+            self.ws.Range(graph_range).CurrentRegion.Select()
+
+        self.shape = self.ws.Shapes.AddChart2(-1, graph_type)
+
+    def delete_shape(self):
+        for i in range(self.ws.Shapes.Count, 0, -1):
+            self.ws.Shapes(i).Delete()
 
     def resize_graph(self, height, width):
         for ws in self.wb.Sheets:
