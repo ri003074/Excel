@@ -1,5 +1,6 @@
 from lib.excel import Excel
 from lib.excel import GraphParameter
+from typing import List
 
 
 def resize_graph(height, width):
@@ -40,11 +41,18 @@ def set_ticks(axis, minimum, maximum, resolution):
     )
 
 
-def make_graph(graph_parameter: GraphParameter):
+def make_graph(graph_parameter: List[GraphParameter]):
     xl = Excel()
     xl.setup_active_excel()
     xl.delete_shape()
     for gp in graph_parameter:
         xl.add_chart(graph_type=gp.graph_type, graph_range=gp.graph_range)
         xl.set_graph_title(title=gp.graph_title)
+        xl.set_axis_title(axis="y", title=gp.axis_y_title)
+        xl.set_tick(
+            axis="y",
+            minimum=gp.axis_y_ticks[0],
+            maximum=gp.axis_y_ticks[1],
+            resolution=gp.axis_y_ticks[2],
+        )
     xl.relocate_graph()

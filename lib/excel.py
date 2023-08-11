@@ -1,5 +1,9 @@
 import dataclasses
 import win32com.client
+from typing import List
+from lib._excel import _set_graph_title
+from lib._excel import _set_axis_title
+from lib._excel import _set_axis_obj
 
 
 @dataclasses.dataclass()
@@ -8,6 +12,8 @@ class GraphParameter:
     graph_type: int = None
     graph_title: str = None
     graph_range: str = None
+    axis_y_title: str = None
+    axis_y_ticks: List = None
 
 
 @dataclasses.dataclass()
@@ -83,25 +89,29 @@ class Excel:
                 print(save_file_path)
 
     def set_axis_title(self, axis, title):
-        for ws in self.wb.Sheets:
-            for i in range(ws.Shapes.Count):
-                shape = ws.Shapes(i + 1)
+        if axis == "x":
+            axis_type = ExcelVariable.xlCategory
+        else:
+            axis_type = ExcelVariable.xlValue
 
-                if axis == "x":
-                    axis_type = ExcelVariable.xlCategory
-                else:
-                    axis_type = ExcelVariable.xlValue
-
-                axis = shape.Chart.Axes(axis_type)
-                axis.HasTitle = True
-                axis.AxisTitle.Characters.Text = title
+        if self.shape is None:
+            for ws in self.wb.Sheets:
+                for i in range(ws.Shapes.Count):
+                    shape = ws.Shapes(i + 1)
+                    _set_axis_title(shape, axis_type, title)
+        else:
+            shape = self.shape
+            _set_axis_title(shape, axis_type, title)
 
     def set_graph_title(self, title):
-        for ws in self.wb.Sheets:
-            for i in range(ws.Shapes.Count):
-                shape = ws.Shapes(i + 1)
-                shape.Chart.HasTitle = True
-                shape.Chart.ChartTitle.Text = title
+        if self.shape is None:
+            for ws in self.wb.Sheets:
+                for i in range(ws.Shapes.Count):
+                    shape = ws.Shapes(i + 1)
+                    _set_graph_title(shape, title)
+        else:
+            shape = self.shape
+            _set_graph_title(shape, title)
 
     def set_tick(self, axis, minimum, maximum, resolution):
         if axis == "x":
@@ -109,10 +119,13 @@ class Excel:
         else:
             axis_type = ExcelVariable.xlValue
 
-        for ws in self.wb.Sheets:
-            for i in range(ws.Shapes.Count):
-                shape = ws.Shapes(i + 1)
-                axis_obj = shape.Chart.Axes(axis_type)
-                axis_obj.MinimumScale = minimum
-                axis_obj.MaximumScale = maximum
-                axis_obj.MajorUnit = resolution
+        if self.shape is None:
+            for ws in self.wb.Sheets:
+                for i in range(ws.Shapes.Count):
+                    shape = ws.Shapes(i + 1)
+                    _set_axis_obj(
+                        shape, axis_type, minimum, maximum, resolution
+                    )
+        else:
+            shape = self.shape
+            _set_axis_obj(shape, axis_type, minimum, maximum, resolution)
