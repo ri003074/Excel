@@ -21,10 +21,10 @@ def save_png():
     xl.save_png()
 
 
-def set_axis_title(axis, title):
+def set_axis_title(axis, title, font_size):
     xl = Excel()
     xl.setup_active_excel()
-    xl.set_axis_title(axis=axis, title=title)
+    xl.set_axis_title(axis=axis, title=title, font_size=font_size)
 
 
 def set_graph_title(title):
@@ -54,7 +54,9 @@ def make_graph(graph_parameter: List[GraphParameter]):
     for gp in graph_parameter:
         xl.add_chart(graph_type=gp.graph_type, graph_range=gp.graph_range)
         xl.set_graph_title(title=gp.graph_title)
-        xl.set_axis_title(axis="y", title=gp.axis_y_title)
+        xl.set_axis_title(
+            axis="y", title=gp.axis_y_title, font_size=gp.axis_y_font_size
+        )
         xl.set_tick(
             axis="y",
             minimum=gp.axis_y_ticks[0],

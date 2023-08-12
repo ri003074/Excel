@@ -15,6 +15,7 @@ class GraphParameter:
     graph_range: str = None
     axis_y_title: str = None
     axis_y_ticks: List = None
+    axis_y_font_size: int = None
 
 
 @dataclasses.dataclass()
@@ -91,7 +92,7 @@ class Excel:
                 )
                 ws.Shapes(i + 1).Chart.Export(save_file_path)
 
-    def set_axis_title(self, axis, title):
+    def set_axis_title(self, axis, title, font_size=None):
         if axis == "x":
             axis_type = ExcelVariable.xlCategory
         else:
@@ -101,10 +102,10 @@ class Excel:
             for ws in self.wb.Sheets:
                 for i in range(ws.Shapes.Count):
                     shape = ws.Shapes(i + 1)
-                    _set_axis_title(shape, axis_type, title)
+                    _set_axis_title(shape, axis_type, title, font_size)
         else:
             shape = self.shape
-            _set_axis_title(shape, axis_type, title)
+            _set_axis_title(shape, axis_type, title, font_size)
 
     def set_graph_title(self, title):
         if self.shape is None:

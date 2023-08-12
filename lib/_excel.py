@@ -1,7 +1,9 @@
-def _set_axis_title(shape, axis_type, title):
+def _set_axis_title(shape, axis_type, title, font_size=None):
     axis = shape.Chart.Axes(axis_type)
     axis.HasTitle = True
     axis.AxisTitle.Characters.Text = title
+    if font_size is not None:
+        axis.AxisTitle.Format.TextFrame2.TextRange.Font.Size = font_size
 
 
 def _set_graph_title(shape, title):
