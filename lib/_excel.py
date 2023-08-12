@@ -14,3 +14,8 @@ def _set_axis_obj(shape, axis_type, minimum, maximum, resolution):
     axis_obj.MinimumScale = minimum
     axis_obj.MaximumScale = maximum
     axis_obj.MajorUnit = resolution
+
+
+def _set_line_format(xl, shape, fill):
+    for i in range(1, xl.ActiveChart.SeriesCollection().Count + 1):
+        shape.Chart.SeriesCollection(i).Format.Line.Visible = fill

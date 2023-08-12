@@ -4,6 +4,7 @@ from typing import List
 from lib._excel import _set_graph_title
 from lib._excel import _set_axis_title
 from lib._excel import _set_axis_obj
+from lib._excel import _set_line_format
 
 
 @dataclasses.dataclass()
@@ -23,17 +24,20 @@ class ExcelVariable:
     xlXYScatter: int = -4169
     xlCategory: int = 1
     xlValue: int = 2
+    msoFalse: int = 0
+    msoTrue: int = -1
 
 
 class Excel:
     def __init__(self):
+        self.xl = None
         self.wb = None
         self.ws = None
         self.shape = None
 
     def setup_active_excel(self):
-        xl = win32com.client.GetObject(Class="Excel.Application")
-        self.wb = xl.Workbooks(1)
+        self.xl = win32com.client.GetObject(Class="Excel.Application")
+        self.wb = self.xl.Workbooks(1)
         self.ws = self.wb.ActiveSheet
 
     def add_chart(self, graph_type, graph_range=None):
@@ -86,7 +90,6 @@ class Excel:
                     + ".png"
                 )
                 ws.Shapes(i + 1).Chart.Export(save_file_path)
-                print(save_file_path)
 
     def set_axis_title(self, axis, title):
         if axis == "x":
@@ -129,3 +132,16 @@ class Excel:
         else:
             shape = self.shape
             _set_axis_obj(shape, axis_type, minimum, maximum, resolution)
+
+    def set_line_format(self, fill=ExcelVariable.msoTrue):
+        if self.shape is None:
+            for ws in self.wb.Sheets:
+                for i in range(ws.Shapes.Count):
+                    shape = ws.Shapes(i + 1)
+                    shape.Select()
+                    _set_line_format(self.xl, shape, fill)
+
+        else:
+            shape = self.shape
+            shape.Select()
+            _set_line_format(self.xl, shape, fill)

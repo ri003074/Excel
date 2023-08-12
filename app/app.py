@@ -41,6 +41,12 @@ def set_ticks(axis, minimum, maximum, resolution):
     )
 
 
+def set_line_format(fill):
+    xl = Excel()
+    xl.setup_active_excel()
+    xl.set_line_format(fill)
+
+
 def make_graph(graph_parameter: List[GraphParameter]):
     xl = Excel()
     xl.setup_active_excel()
@@ -55,4 +61,6 @@ def make_graph(graph_parameter: List[GraphParameter]):
             maximum=gp.axis_y_ticks[1],
             resolution=gp.axis_y_ticks[2],
         )
+        xl.set_line_format(0)
+
     xl.relocate_graph()
