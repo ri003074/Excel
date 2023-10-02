@@ -47,8 +47,11 @@ def set_line_format(fill):
     xl.set_line_format(fill)
 
 
-def make_graph(graph_parameter: List[GraphParameter]):
+def make_graph(graph_parameter: List[GraphParameter], file_path=None):
     xl = Excel()
+    if file_path is not None:
+        xl.csv_to_xlsx(file_path=file_path)
+        xl.open_xlsx_file()
     xl.setup_active_excel()
     xl.delete_shape()
     for gp in graph_parameter:
@@ -66,3 +69,15 @@ def make_graph(graph_parameter: List[GraphParameter]):
         xl.set_line_format(0)
 
     xl.relocate_graph()
+
+
+def save_workbook():
+    xl = Excel()
+    xl.setup_active_excel()
+    xl.save_workbook()
+
+
+def quit_excel():
+    xl = Excel()
+    xl.setup_active_excel()
+    xl.quit()

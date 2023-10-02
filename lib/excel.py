@@ -1,5 +1,7 @@
 import dataclasses
 import win32com.client
+import sys
+import pandas as pd
 from typing import List
 from lib._excel import _set_graph_title
 from lib._excel import _set_axis_title
@@ -35,6 +37,24 @@ class Excel:
         self.wb = None
         self.ws = None
         self.shape = None
+        self.xlsx_file_path = None
+
+    def csv_to_xlsx(self, file_path):
+        file_path_length = len(file_path)
+        if file_path_length > 255:
+            sys.exit(f"file path length {file_path_length} is too long")
+
+        df = pd.read_csv(file_path)
+        self.xlsx_file_path = file_path.replace(".csv", ".xlsx")
+        try:
+            df.to_excel(self.xlsx_file_path, index=False, header=True)
+        except PermissionError:
+            print(f"file {self.xlsx_file_path} is already opened")
+
+    def open_xlsx_file(self):
+        self.xl = win32com.client.Dispatch("Excel.Application")
+        self.xl.Visible = True
+        self.wb = self.xl.Workbooks.Open(self.xlsx_file_path)
 
     def setup_active_excel(self):
         self.xl = win32com.client.GetObject(Class="Excel.Application")
@@ -146,3 +166,11 @@ class Excel:
             shape = self.shape
             shape.Select()
             _set_line_format(self.xl, shape, fill)
+
+    def save_workbook(self):
+        self.xl.DisplayAlerts = False
+        self.wb.Save()
+
+    def quit(self):
+        self.xl.DisplayAlerts = False
+        self.xl.Quit()
